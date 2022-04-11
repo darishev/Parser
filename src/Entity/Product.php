@@ -47,6 +47,11 @@ class Product
      */
     private $updated_date;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Seller::class, inversedBy="products")
+     */
+    private $seller;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -120,6 +125,18 @@ class Product
     public function setUpdatedDate(?\DateTimeImmutable $updated_date): self
     {
         $this->updated_date = $updated_date;
+
+        return $this;
+    }
+
+    public function getSeller(): ?Seller
+    {
+        return $this->seller;
+    }
+
+    public function setSeller(?Seller $seller): self
+    {
+        $this->seller = $seller;
 
         return $this;
     }
