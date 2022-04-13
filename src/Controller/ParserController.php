@@ -12,6 +12,8 @@ use GuzzleHttp\Promise;
 use GuzzleHttp\Handler\CurlMultiHandler;
 use Symfony\Component\DomCrawler\Crawler;
 use GuzzleHttp\HandlerStack;
+use App\Service\ParserService;
+
 
 class ParserController extends AbstractController
 {
@@ -22,16 +24,11 @@ class ParserController extends AbstractController
         ]);
     }
 
-    public function collectData($url)
+    public function collectData(Request $url)
     {
 
-        $client = new Client(); //sync client
-        $proCli = $client->getAsync('https://www.ozon.ru/category/kedy-i-slipony-muzhskie-7660/?sorting=new')->wait();
-        $crawler = new Crawler($proCli->getBody()->getContents());
-      //  $xpatch = '';
-      //  dd($crawler->filterXPath($xpatch)->outerHtml());
-        dd($crawler->outerHtml());
-
+        $parserService = new ParserService();
+        $parserService->collect($url);
 
 
     }

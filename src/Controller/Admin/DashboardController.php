@@ -23,31 +23,20 @@ class DashboardController extends AbstractDashboardController
     #[Route('/parser', name: 'admin')]
     public function show(Request $request, ParserController $parsing): Response
     {
-        /*     $form = $this->createForm(ParsingRequestFormType::class);
-             $form->handleRequest($request);
-             if ($form->isSubmitted()) {
-                 $result = $parsing->collectData($form->getData());
-                 dd($result);
-             }
 
-
-             return $this->render('admin/index.html.twig', [
-                 'form' => $form->createView()
-             ]);*/
         $form = $this->createFormBuilder(null)
             ->add('query', TextType::class)
             ->add('search', SubmitType::class)
             ->getForm();
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
-            $result = $parsing->collectData($form->getData());
-            echo $result;
-
+            $parsing->collectData($form->getData());
 
         }
         return $this->render('admin/index.html.twig', [
             'form' => $form->createView()
         ]);
+
     }
 
     public function configureDashboard(): Dashboard

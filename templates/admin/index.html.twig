@@ -1,13 +1,31 @@
+
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
 {% block main %}
+    {% block javascripts %}
+        <head>
+            <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+
+        </head>
+
+    {% endblock %}
+    {% block menu %}
+
+        <input type="button" value="Construction" href="/construction" id="button_building"/>
+
+        <script src="../../js/question_shows.js"></script>
+    {% endblock %}
 
 
     {{ form_start(form) }}
 
 
-    {{ form_widget(form.query)}}
+    {{ form_widget(form.query) }}
     {{ form_widget(form.search, { 'attr': {'class': 'btn btn-primary'} }) }}
 
     {{ form_end(form) }}
+
+
 {% endblock main %}
+
