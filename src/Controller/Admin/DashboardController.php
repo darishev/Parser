@@ -36,7 +36,8 @@ class DashboardController extends AbstractDashboardController
         ]);
 
     }
-    #[Route('/admin', name: 'admin')]
+
+    #[Route('/admin', name: 'adminA')]
     public function index(): Response
     {
 
@@ -54,7 +55,7 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Parser', 'fa fa-paste');
+        yield MenuItem::linktoRoute('Parser', 'fa fa-paste', 'parser');
         // yield MenuItem::linktoRoute('Back to the website', 'fas fa-home', 'homepage');
         //    yield MenuItem::linkToCrud('Sellers', 'fas fa-map-marker-alt', Seller::class);
         yield MenuItem::linkToCrud('Products', 'fas fa-comments', Product::class);
