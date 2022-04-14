@@ -24,11 +24,12 @@ class ParserController extends AbstractController
         ]);
     }
 
-    public function collectData(Request $url)
+    public function collectData($url)
     {
 
         $parserService = new ParserService();
-        $parserService->collect($url);
+
+        $parserService->collect(implode($url));
 
 
     }
