@@ -140,4 +140,12 @@ class Product
 
         return $this;
     }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        $this->created_date = new \DateTimeImmutable();
+    }
 }
