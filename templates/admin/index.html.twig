@@ -2,11 +2,14 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
 {% block main %}
+    <div class="container">
+
 
     {{ form_start(form) }}
-    {{ form_widget(form.query) }}
+
+    {{ form_widget(form.query,  { 'attr': {'class': 'form-control'} }) }}
     {{ form_widget(form.search, { 'attr': {'class': 'btn btn-primary'} }) }}
     {{ form_end(form) }}
-
+</div>
 {% endblock main %}
 

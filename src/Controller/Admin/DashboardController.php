@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Product;
 use App\Entity\Seller;
+use App\Service\ParserService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -31,7 +32,9 @@ class DashboardController extends AbstractDashboardController
         if ($form->isSubmitted()) {
             $parsing->collectData($form->getData());
         }
-        $param= 123;
+
+
+
         return $this->render('admin/index.html.twig', [
             'form' => $form->createView()
         ]);
@@ -56,7 +59,7 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linktoRoute('Parser', 'fas fa-paste', 'parser');
+        yield MenuItem::linktoRoute('Parser start', 'fas fa-paste', 'parser');
         // yield MenuItem::linktoRoute('Back to the website', 'fas fa-home', 'homepage');
        yield MenuItem::linkToCrud('Sellers', 'fas fa-paste', Seller::class);
         yield MenuItem::linkToCrud('Products', 'fas fa-paste', Product::class);

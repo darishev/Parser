@@ -32,13 +32,12 @@ class ParserService
         $crawler = new Crawler($resp);
 
         //5 attempts for connect and extract needled json file
-        for ($i = 0; $i < 5; $i++) {
-            if ($domData = $crawler->filterXPath('//*[@id="state-searchResultsV2-252189-default-1"]')->outerHtml()) {
-                $domData = str_replace(['\'></div>', '<div id="state-searchResultsV2-252189-default-1" data-state=\''], '', $domData);
-                $jsonFormat = json_decode($domData, true);
-            }
 
-        }
+        $domData = $crawler->filterXPath('//*[@id="state-searchResultsV2-252189-default-1"]')->outerHtml();
+        $domData = str_replace(['\'></div>', '<div id="state-searchResultsV2-252189-default-1" data-state=\''], '', $domData);
+        $jsonFormat = json_decode($domData, true);
+
+
         //json extracted
 
         //productArrayGeneration
@@ -60,12 +59,15 @@ class ParserService
             }
         }
 
+        return $sucsuccessfulseFlush = ['Good request' => 12];
     }
 
     public function sellerCheck($sellerCheck)
     {
         $seller = new Seller();
-       dd( $sellerName = strip_tags(strstr($sellerCheck['multiButton']['ozonSubtitle']['textAtomWithIcon']['text'], 'продавец ')));
+
+        $sellerName = strip_tags(strstr($sellerCheck['multiButton']['ozonSubtitle']['textAtomWithIcon']['text'], 'продавец '));
+        $sellerName = str_replace('продавец ', '', $sellerName);
         if (!$this->em->getRepository(Seller::class)->findBy(array('name' => $sellerName))) {
             $seller->setName($sellerName);
             $this->em->persist($seller);
@@ -105,10 +107,11 @@ class ParserService
 
     }
 
-    private function saveProduct($productData, $upd = false)
+    private function saveProduct($productData)
     {
         $entityManager = $this->em;
         $product = new Product();
+
         $product
             ->setName($productData['productName'])
             ->setPrice($productData['productPrice'])
@@ -119,6 +122,9 @@ class ParserService
         $entityManager->persist($product);
         $entityManager->flush();
 
+
     }
+
+
 }
 
