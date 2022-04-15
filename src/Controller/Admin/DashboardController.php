@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use App\Controller\ParserController;
+
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -29,7 +30,6 @@ class DashboardController extends AbstractDashboardController
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             $parsing->collectData($form->getData());
-
         }
         return $this->render('admin/index.html.twig', [
             'form' => $form->createView()

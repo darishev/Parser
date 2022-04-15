@@ -141,11 +141,24 @@ class Product
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return $this->reviews_count;
+    }
+
     /**
      * @ORM\PrePersist
      */
     public function setCreatedAtValue()
     {
         $this->created_date = new \DateTimeImmutable();
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setUpdatedValues()
+    {
+        $this->updated_date = new \DateTimeImmutable();
     }
 }

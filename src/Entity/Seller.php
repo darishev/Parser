@@ -69,6 +69,11 @@ class Seller
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
     public function removeProduct(product $product): self
     {
         if ($this->products->removeElement($product)) {

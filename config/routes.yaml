@@ -1,3 +1,4 @@
 get:
-    path: /geturl/
+    path: /geturl
     controller: App\Controller\ParserController::collectData
+
