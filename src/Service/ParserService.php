@@ -26,58 +26,51 @@ class ParserService
     {
 
         //Guzzle client init->
-        $client = new Client(array('connect_timeout' => 10));
-        $resp = $client->request('GET', $url)->getBody()->getContents();
+        $client = new Client();
+        $resp = $client->request('GET', $url, array('connect_timeout' => 0))->getBody()->getContents();
 
+        //DOM_Crawler init->
         $crawler = new Crawler($resp);
 
-        //5 attempts for connect and extract needled json file
-
-        $domData = $crawler->filterXPath('//*[@id="state-searchResultsV2-252189-default-1"]')->outerHtml();
-        $domData = str_replace(['\'></div>', '<div id="state-searchResultsV2-252189-default-1" data-state=\''], '', $domData);
+        //Json extract
+        $domData = $crawler->filterXPath("//*[contains(concat(' ', @id, ' '), 'state-searchResultsV2')]")->outerHtml();
+        $domData = str_replace(['\'></div>', '<div id="state-searchResultsV2', '-252189-default-1" ', '-1304093-default-1" ', 'data-state=\''], '', $domData);
         $jsonFormat = json_decode($domData, true);
 
-
-        //json extracted
-
-        //productArrayGeneration
+        //productData generation array
         foreach ($jsonFormat['items'] as $itemData) {
-
             if (isset($itemData['mainState'][2]['atom']['textAtom']['text']) && count($itemData) != 8) {
 
                 $productData = [
-                    'productCounts' => count($itemData),
                     'productName' => $itemData['mainState'][2]['atom']['textAtom']['text'],
                     'productPrice' => str_replace([' ', '₽'], '', $itemData['mainState'][0]['atom']['price']['price']),
                     'productSku' => $itemData['topRightButtons'][0]['favoriteProductMolecule']['sku'],
-                    'productSeller' => $this->sellerCheck($itemData), //Check duplication
-                    'ProductUpdated' => '',
-                    'productReviews' => $this->reviewsCountCheck($itemData)//Extract int value
+                    'productSeller' => $this->requireSellerUpdate($itemData), //Check exist seller or no
+                    'productReviews' => $this->reviewsCountCheck($itemData)//Extract integer from string reviews
                 ];
 
-                $this->dublicateCheck($productData);
+                $this->requireUpdateCheck($productData);
             }
+
         }
 
-        return $sucsuccessfulseFlush = ['Good request' => 12];
     }
 
-    public function sellerCheck($sellerCheck)
+    public function requireSellerUpdate($productData): ?object
     {
         $seller = new Seller();
-
-        $sellerName = strip_tags(strstr($sellerCheck['multiButton']['ozonSubtitle']['textAtomWithIcon']['text'], 'продавец '));
+        $sellerName = strip_tags(strstr($productData['multiButton']['ozonSubtitle']['textAtomWithIcon']['text'], 'продавец '));
         $sellerName = str_replace('продавец ', '', $sellerName);
-        if (!$this->em->getRepository(Seller::class)->findBy(array('name' => $sellerName))) {
+
+        $idCheck = $this->em->getRepository(Seller::class)->findOneBy(array('name' => $sellerName));
+        if (!$idCheck) {
             $seller->setName($sellerName);
             $this->em->persist($seller);
             $this->em->flush();
+            //if seller doesn't exist in database, create new
             return $seller->setName($sellerName);
-        } else {
-            //getID and returnID
-            $idCheck = $this->em->getRepository(Seller::class)->findOneBy(array('name' => $sellerName));
-            return $idCheck;
-        }
+        } else return $idCheck;
+        //if seller_id exist in current product, return original input seller_id for product
 
     }
 
@@ -85,33 +78,31 @@ class ParserService
     public function reviewsCountCheck($itemReview): ?int
     {
 
-        if (isset($itemReview['mainState'][3]['atom']['rating']['count'])) {
-            $inputItem = $itemReview['mainState'][3]['atom']['rating']['count'];
-            return (int)str_replace(' отзыва', '', $inputItem);
-        } else {
-            return 0;
-        }
+        $itemReview = $itemReview['mainState'][3]['atom']['rating']['count'];
+        if ($itemReview) return (int)str_replace(' отзыва', null, $itemReview);
+        else return 0;
 
     }
 
-    public function dublicateCheck($data)
+    public function requireUpdateCheck($productData): void
     {
-        if (!$this->em->getRepository(Product::class)->findBy(array('sku' => $data['productSku']))) {
-            $this->saveProduct($data);
+
+        $searchSku = $this->em->getRepository(Product::class)->findOneBy(array('sku' => $productData['productSku']));
+
+        if ($searchSku) {
+            $searchSku->setUpdatedValues();
+            $this->em->persist($searchSku);
+            $this->em->flush(); //if in database exist productData[sku], update -> UpdatedValues
         } else {
-            $updateProduct = $this->em->getRepository(Product::class)->findOneBy(array('sku' => $data['productSku']));
-            $updateProduct->setUpdatedValues();
-            $this->em->persist($updateProduct);
-            $this->em->flush();
+            $this->saveProduct($productData); //if in database doesn't exist productData[sku], return original product array
         }
 
     }
 
     private function saveProduct($productData)
     {
-        $entityManager = $this->em;
-        $product = new Product();
 
+        $product = new Product();
         $product
             ->setName($productData['productName'])
             ->setPrice($productData['productPrice'])
@@ -119,12 +110,11 @@ class ParserService
             ->setSeller($productData['productSeller'])
             ->setReviewsCount($productData['productReviews'])
             ->setCreatedAtValue();
-        $entityManager->persist($product);
-        $entityManager->flush();
 
+        $this->em->persist($product);
+        $this->em->flush();
 
     }
-
 
 }
 
