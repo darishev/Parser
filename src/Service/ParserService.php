@@ -46,7 +46,6 @@ class ParserService
                     'productReviews' => $this->reviewCheck($itemData)
                 ];
 
-
                 $this->dublicateCheck($productData);
             }
         }
@@ -63,8 +62,8 @@ class ParserService
             $this->em->flush();
             return $seller->setName($sellerName);
         } else {
-            $ew = $this->em->getRepository(Seller::class)->findBy(array('name' => $sellerName));
-            return $ew[0];
+                $idCheck =$this->em->getRepository(Seller::class)->findBy(array('name' => $sellerName));
+            return $idCheck['0'];
         }
 
     }
@@ -85,7 +84,6 @@ class ParserService
     {
         // dd( $this->em->getRepository(Seller::class)->find(3));
         if (!$this->em->getRepository(Product::class)->findBy(array('sku' => $data['productSku']))) {
-
             $this->saveProduct($data);
         }
 
