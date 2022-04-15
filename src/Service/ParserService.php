@@ -7,6 +7,7 @@ use App\Entity\Seller;
 use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Controller\Admin\DashboardController;
 
 class ParserService
 {
@@ -43,7 +44,7 @@ class ParserService
         //productArrayGeneration
         foreach ($jsonFormat['items'] as $itemData) {
 
-            if (isset($itemData['mainState'][2]['atom']['textAtom']['text'])) {
+            if (isset($itemData['mainState'][2]['atom']['textAtom']['text']) && count($itemData) != 8) {
 
                 $productData = [
                     'productCounts' => count($itemData),
@@ -64,19 +65,20 @@ class ParserService
     public function sellerCheck($sellerCheck)
     {
         $seller = new Seller();
-        $sellerName = strip_tags(strstr($sellerCheck['multiButton']['ozonSubtitle']['textAtomWithIcon']['text'], 'продавец '));
+       dd( $sellerName = strip_tags(strstr($sellerCheck['multiButton']['ozonSubtitle']['textAtomWithIcon']['text'], 'продавец ')));
         if (!$this->em->getRepository(Seller::class)->findBy(array('name' => $sellerName))) {
             $seller->setName($sellerName);
             $this->em->persist($seller);
             $this->em->flush();
             return $seller->setName($sellerName);
         } else {
-            //getID
-            $idCheck = $this->em->getRepository(Seller::class)->findBy(array('name' => $sellerName));
-            return $idCheck['0'];
+            //getID and returnID
+            $idCheck = $this->em->getRepository(Seller::class)->findOneBy(array('name' => $sellerName));
+            return $idCheck;
         }
 
     }
+
 
     public function reviewsCountCheck($itemReview): ?int
     {
@@ -94,11 +96,16 @@ class ParserService
     {
         if (!$this->em->getRepository(Product::class)->findBy(array('sku' => $data['productSku']))) {
             $this->saveProduct($data);
+        } else {
+            $updateProduct = $this->em->getRepository(Product::class)->findOneBy(array('sku' => $data['productSku']));
+            $updateProduct->setUpdatedValues();
+            $this->em->persist($updateProduct);
+            $this->em->flush();
         }
 
     }
 
-    private function saveProduct($productData, bool $upd = false)
+    private function saveProduct($productData, $upd = false)
     {
         $entityManager = $this->em;
         $product = new Product();
@@ -109,9 +116,9 @@ class ParserService
             ->setSeller($productData['productSeller'])
             ->setReviewsCount($productData['productReviews'])
             ->setCreatedAtValue();
-
         $entityManager->persist($product);
         $entityManager->flush();
 
     }
 }
+
