@@ -23,18 +23,11 @@ class ParserController extends AbstractController
 
     }
 
-    public function index(Request $request): Response
-    {
-        return $this->render('parser/index.html.twig', [
-            'controller_name' => 'ParserController',
-        ]);
-    }
-
     public function collectData($url)
     {
 
         $url = implode($url);
-        if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
+        if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) && strpos($url,'https://www.ozon.ru/')) {
             $parserService = new ParserService($this->em);
             return $parserService->collect($url);
         } else {
