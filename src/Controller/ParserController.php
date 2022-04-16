@@ -32,6 +32,10 @@ class ParserController extends AbstractController
             $parserService = new ParserService($this->em);
             return $parserService->collect($url);
         } else {
+        $this->addFlash(
+                'warning',
+                'Пожалуйста проверьте URL, ссылка некорретна! '
+            );
             return $this->redirectToRoute('parser');
         }
 
