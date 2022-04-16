@@ -74,15 +74,17 @@ class ParserService
 
     }
 
-
-    public function reviewsCountCheck($itemReview): ?int
+ public function reviewsCountCheck($itemReview):?int
     {
-
         $itemReview = $itemReview['mainState'][3]['atom']['rating']['count'];
-        if ($itemReview) return (int)str_replace(' отзыва', null, $itemReview);
-        else return 0;
+
+        if ($itemReview !== null)
+            return (int)str_replace(' отзыв%', null, $itemReview);
+        else
+            return 0;
 
     }
+
 
     public function requireUpdateCheck($productData): void
     {
