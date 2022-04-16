@@ -22,7 +22,7 @@ class ParserService
 
     }
 
-    public function collect($url)
+    public function collect($url):void
     {
 
         //Guzzle client init->
@@ -45,7 +45,7 @@ class ParserService
                     'productName' => $itemData['mainState'][2]['atom']['textAtom']['text'],
                     'productPrice' => str_replace([' ', '₽'], '', $itemData['mainState'][0]['atom']['price']['price']),
                     'productSku' => $itemData['topRightButtons'][0]['favoriteProductMolecule']['sku'],
-                    'productSeller' => $this->requireSellerUpdate($itemData), //Check exist seller or no
+                    'productSeller' => $this->requireSellerUpdateCheck($itemData), //Check exist seller or no
                     'productReviews' => $this->reviewsCountCheck($itemData)//Extract integer from string reviews
                 ];
 
@@ -56,7 +56,7 @@ class ParserService
 
     }
 
-    public function requireSellerUpdate($productData): ?object
+    public function requireSellerUpdateCheck($productData):?object
     {
         $seller = new Seller();
         $sellerName = strip_tags(strstr($productData['multiButton']['ozonSubtitle']['textAtomWithIcon']['text'], 'продавец '));
@@ -69,12 +69,15 @@ class ParserService
             $this->em->flush();
             //if seller doesn't exist in database, create new
             return $seller->setName($sellerName);
-        } else return $idCheck;
-        //if seller_id exist in current product, return original input seller_id for product
+        } else
+            //if seller_id exist in current product, return original input seller_id for product
+            return $idCheck;
+
 
     }
 
- public function reviewsCountCheck($itemReview):?int
+
+    public function reviewsCountCheck($itemReview):?int
     {
         $itemReview = $itemReview['mainState'][3]['atom']['rating']['count'];
 
@@ -85,8 +88,7 @@ class ParserService
 
     }
 
-
-    public function requireUpdateCheck($productData): void
+    public function requireUpdateCheck($productData):void
     {
 
         $searchSku = $this->em->getRepository(Product::class)->findOneBy(array('sku' => $productData['productSku']));
@@ -94,14 +96,16 @@ class ParserService
         if ($searchSku) {
             $searchSku->setUpdatedValues();
             $this->em->persist($searchSku);
-            $this->em->flush(); //if in database exist productData[sku], update -> UpdatedValues
+            //if in database exist productData[sku], update -> UpdatedValues
+            $this->em->flush();
         } else {
-            $this->saveProduct($productData); //if in database doesn't exist productData[sku], return original product array
+            //if in database doesn't exist productData[sku], return original product array
+            $this->saveProduct($productData);
         }
 
     }
 
-    private function saveProduct($productData)
+    private function saveProduct($productData):void
     {
 
         $product = new Product();
