@@ -27,7 +27,8 @@ class ParserController extends AbstractController
     {
 
         $url = implode($url);
-        if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) && !strpos($url,'https://www.ozon.ru/')) {
+
+        if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) && str_contains($url,'https://www.ozon.ru/')) {
             $parserService = new ParserService($this->em);
             return $parserService->collect($url);
         } else {
