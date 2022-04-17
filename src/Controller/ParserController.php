@@ -25,14 +25,13 @@ class ParserController extends AbstractController
 
     public function collectData($url)
     {
+        $url = $url['query'];
 
-        $url = implode($url);
-
-        if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) && str_contains($url,'https://www.ozon.ru/')) {
+        if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) && str_contains($url, 'https://www.ozon.ru/')) {
             $parserService = new ParserService($this->em);
-            return $parserService->collect($url);
+            $parserService->collect($url);
         } else {
-        $this->addFlash(
+            $this->addFlash(
                 'warning',
                 'Пожалуйста проверьте URL, ссылка некорретна! '
             );
