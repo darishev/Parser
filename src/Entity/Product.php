@@ -48,7 +48,7 @@ class Product
     private $updated_date;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Seller::class, inversedBy="products")
+     * @ORM\ManyToOne(targetEntity="Seller", inversedBy="products")
      */
     private $seller;
 

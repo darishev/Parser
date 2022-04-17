@@ -25,7 +25,7 @@ class Seller
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=product::class, mappedBy="seller")
+     * @ORM\OneToMany(targetEntity="Product", mappedBy="seller")
      */
     private $products;
 
