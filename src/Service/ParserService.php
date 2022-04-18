@@ -74,10 +74,8 @@ class ParserService
 
     public function reviewsCountCheck($itemReview): ?int
     {
-        $itemReview = $itemReview['mainState'][3]['atom']['rating']['count'];
-
-        if ($itemReview !== null)
-            return (int)str_replace(' отзыв%', null, $itemReview);
+        if ($itemReview['mainState'][3]['atom']['type']== 'rating')
+            return (int)str_replace(' отзыв%', null, $itemReview['mainState'][3]['atom']['rating']['count']);
         else
             return 0;
     }

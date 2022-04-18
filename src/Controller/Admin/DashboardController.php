@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DashboardController extends AbstractDashboardController
 {
     #[Route('/parser', name: 'parser')]
-    public function show(Request $request, ParserController $parsing,$stats): Response
+    public function show(Request $request, ParserController $parsing): Response
     {
 
         $form = $this->createFormBuilder(null)
@@ -35,7 +35,7 @@ class DashboardController extends AbstractDashboardController
 
         return $this->render('admin/index.html.twig', [
             'form' => $form->createView(),
-            'stats'=> 'qwe'
+
         ]);
 
     }
