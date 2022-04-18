@@ -22,9 +22,8 @@ class ParserService
 
     }
 
-    public function collect($url): array
+    public function collect($url): void
     {
-
         //Guzzle client init->
         $client = new Client();
         $resp = $client->request('GET', $url, array('connect_timeout' => 0))->getBody()->getContents();
@@ -51,20 +50,11 @@ class ParserService
 
                 $this->requireUpdateCheck($productData);
             }
-
         }
-        $statsData = [
-            'Product counts' => 0,
-            'Good counts' => 0,
-            'Bad counts' => 0
-        ];
-
-        return $statsData;
     }
 
     public function requireSellerUpdateCheck($productData): ?object
     {
-
         $seller = new Seller();
         $sellerName = strip_tags(strstr($productData['multiButton']['ozonSubtitle']['textAtomWithIcon']['text'], 'продавец '));
         $sellerName = str_replace('продавец ', '', $sellerName);
@@ -79,26 +69,21 @@ class ParserService
         } else
             //if seller_id exist in current product, return original input seller_id for product
             return $idCheck;
-
-
     }
 
 
     public function reviewsCountCheck($itemReview): ?int
     {
-
         $itemReview = $itemReview['mainState'][3]['atom']['rating']['count'];
 
         if ($itemReview !== null)
             return (int)str_replace(' отзыв%', null, $itemReview);
         else
             return 0;
-
     }
 
     public function requireUpdateCheck($productData): void
     {
-
         $searchSku = $this->em->getRepository(Product::class)->findOneBy(array('sku' => $productData['productSku']));
 
         if ($searchSku) {
@@ -110,12 +95,10 @@ class ParserService
             //if in database doesn't exist productData[sku], return original product array
             $this->saveProduct($productData);
         }
-
     }
 
     private function saveProduct($productData): void
     {
-
         $product = new Product();
         $product
             ->setName($productData['productName'])
@@ -127,7 +110,6 @@ class ParserService
 
         $this->em->persist($product);
         $this->em->flush();
-
     }
 
 }

@@ -19,8 +19,20 @@ class ProductController extends DashboardController
         $this->entityManager = $entityManager;
     }
 
+    #[Route('/products', name: 'app_productList')]
+    public function productListView(): Response
+    {
+        $productIdFind = $this->entityManager
+            ->getRepository(Product::class)
+            ->findAll();
 
-    #[Route('/product/{id}', name: 'app_product')]
+
+        return $this->render('product/productList.html.twig', [
+            'allProducts' => $productIdFind
+        ]);
+    }
+
+    #[Route('/products/{id}', name: 'app_product')]
     public function product($id): Response
     {
         $productIdFind = $this->entityManager

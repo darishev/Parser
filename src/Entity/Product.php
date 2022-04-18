@@ -129,6 +129,16 @@ class Product
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function __toString(): string
+    {
+
+        return $this->created_date;
+
+    }
+
     public function getSeller(): ?Seller
     {
         return $this->seller;
@@ -160,9 +170,5 @@ class Product
         $this->updated_date = new \DateTimeImmutable();
     }
 
-    public function __toString(): string
-    {
-        return $this->created_date;
 
-    }
 }
