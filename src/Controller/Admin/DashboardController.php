@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DashboardController extends AbstractDashboardController
 {
     #[Route('/parser', name: 'parser')]
-    public function show(Request $request, ParserController $parsing): Response
+    public function show(Request $request, ParserController $parsing,$stats): Response
     {
 
         $form = $this->createFormBuilder(null)
@@ -33,10 +33,9 @@ class DashboardController extends AbstractDashboardController
             $parsing->collectData($form->getData());
         }
 
-
-
         return $this->render('admin/index.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'stats'=> 'qwe'
         ]);
 
     }
@@ -61,7 +60,7 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linktoRoute('Parser start', 'fas fa-paste', 'parser');
         // yield MenuItem::linktoRoute('Back to the website', 'fas fa-home', 'homepage');
-       yield MenuItem::linkToCrud('Sellers', 'fas fa-paste', Seller::class);
+        yield MenuItem::linkToCrud('Sellers', 'fas fa-paste', Seller::class);
         yield MenuItem::linkToCrud('Products', 'fas fa-paste', Product::class);
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
     }

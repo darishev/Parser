@@ -27,7 +27,6 @@ class ProductCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
 
-
         yield AssociationField::new('seller', 'name');
         yield TextField::new('name');
         yield TextField::new('sku');

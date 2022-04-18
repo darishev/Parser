@@ -1,12 +1,17 @@
-{% extends '@EasyAdmin/page/content.html.twig' %}
+{% extends '@!EasyAdmin/page/content.html.twig' %}
 
-{# Let\'s remove/empty the header #}
-{% block content_header_wrapper %} {% endblock content_header_wrapper %}
-
-{# The main page content block #}
 {% block main %}
 
-{% endblock main %}
+    <h1>Внутренний ID товара - {{ productId }}</h1>
+    <h1> Наименование товара - {{ productName }}</h1>
+    <ul>
+        <table>
 
-{# Let\'s remove/empty the footer #}
-{% block content_footer_wrapper %} {% endblock content_footer_wrapper %}
+            <tr><td> Цена {{ productPrice }} руб.</td></tr>
+            <tr><td> Артикул товара - {{ productSku }}</td></tr>
+            <tr><td>Продавец {{ Seller }}</td></tr>
+            <tr><td> Создан {{ productCreatedAt }}</td></tr>
+
+        </table>
+    </ul>
+{% endblock main %}
